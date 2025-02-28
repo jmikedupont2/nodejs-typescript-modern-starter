@@ -41,7 +41,11 @@
     "start": "node --enable-source-maps ./dist/index.js",
     "test": "jest --runInBand ."
   },
+  "dependencies": {
+    "dotenv": "16.4.7"
+  },
   "devDependencies": {
+    "dotenv":"16.4.7",
     "@babel/core": "7.26.9",
     "@babel/preset-env": "7.26.9",
     "@babel/preset-typescript": "7.26.0",
