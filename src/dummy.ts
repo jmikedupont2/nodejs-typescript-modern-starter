@@ -1083,11 +1083,12 @@ namespace z {
     _input:T
     _output:U
     _def:V
-    export type output = U
+    
   }
   //export function infer():any{}
-  
-  
+  export type output<T=any>={};
+  export type input<T=any>={};
+  export type ZodEffects<T=any> = any;
   // type ZodType<T = any, U = any, V = any> = ZodType<T, U, V>;
   export type infer<T extends ZodType<any, any, any>>=any;
   // = T["_output"];
@@ -1096,6 +1097,7 @@ namespace z {
         _input: "",
         _output: "",
         _def: {},
+        
       };
     }
   //export function string():ZodType<string>{
@@ -2231,6 +2233,36 @@ export interface StructuredToolParams extends Pick<StructuredToolInterface, "nam
   */
   description?: string;
 }
+class OpenAIChatInput{}
+namespace OpenAIClient {
+  export namespace Chat {
+    //export interface ChatCompletionModality {}
+    //export interface ChatCompletionReasoningEffort {}
+    export interface Chat{
+
+     
+      //invoke(prompt: string): Promise<string>;
+    }
+    // export interface ChatOpenAIFields {
+    //   temperature?: number;
+    //   topP?: number;
+    //   frequencyPenalty?: number;
+    //   presencePenalty?: number;
+    //   n?: number;
+    //   modelName?: string;
+    //   model?: string;
+    // }
+    // export interface ChatOpenAICallOptions {
+    //   prompt: string;
+    //   fields: ChatOpenAIFields;
+    // }
+    // export interface ChatOpenAIStructuredOutputMethodOptions {
+    //   prompt: string;
+    //   fields: ChatOpenAIFields;
+    // }
+
+  }
+}
 //import { StructuredToolInterface, StructuredToolParams } from "@langchain/core/tools.js";
 //import { ToolChoice } from "@langchain/core/language_models/chat_models.js";
 //import { BaseChatModelParams } from "@langchain/core/language_models/chat_models.js";
@@ -2240,7 +2272,7 @@ export interface StructuredToolParams extends Pick<StructuredToolInterface, "nam
 
 //import { ChatOpenAIFields, ChatOpenAICallOptions, ChatOpenAIStructuredOutputMethodOptions } from "./types.js";
 
-dotenv.config();
+//dotenv.config();
 
 // export class ChatWrapper {
 //    // private chatModel: ChatOpenAI;
@@ -2679,6 +2711,8 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
       functions?: FunctionDefinition[];
     }
     class ChatOpenAIToolType{}
+    class OpenAIToolChoice{}
+    class ChatOpenAIResponseFormat{}
     export interface ChatOpenAICallOptions extends OpenAICallOptions, BaseFunctionCallOptions {
       tools?: ChatOpenAIToolType[];
       tool_choice?: OpenAIToolChoice;
@@ -2792,6 +2826,8 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
       */
       callbackManager?: CallbackManager;
       cache?: BaseCache | boolean;
+      apiKey: string;
+      model: string ;
     }
     export type BaseChatModelParams = BaseLanguageModelParams & {
       /**
@@ -2804,7 +2840,10 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
       * - If false (default), will always use streaming case if available.
       */
       disableStreaming?: boolean;
+      model: string ="foo"
     };
+    class AzureOpenAIInput {}
+    class LegacyOpenAIInput {}
     export interface ChatOpenAIFields extends Partial<OpenAIChatInput>, Partial<AzureOpenAIInput>, BaseChatModelParams {
       configuration?: ClientOptions & LegacyOpenAIInput;
     }
@@ -3002,6 +3041,9 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
         StringWithAutocomplete<MessageType | "user" | "assistant" | "placeholder">,
         MessageContent
       ] | string
+      
+      class CallbackManagerForLLMRun {}
+
       export declare abstract class BaseChatModel<CallOptions extends BaseChatModelCallOptions = BaseChatModelCallOptions, OutputMessageType extends BaseMessageChunk = AIMessageChunk> extends BaseLanguageModel<OutputMessageType, CallOptions> {
         ParsedCallOptions: Omit<CallOptions, Exclude<keyof RunnableConfig, "signal" | "timeout" | "maxConcurrency">>;
         lc_namespace: string[];
@@ -3124,6 +3166,27 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
         ls_max_tokens?: number;
         ls_stop?: Array<string>;
       };
+
+      type ChatCompletionAudioParamFormat = /*unresolved*/ any;
+      type ChatCompletionAudioParamVoice = /*unresolved*/ any;
+
+      export interface ChatCompletionAudioParam  {
+    format: ChatCompletionAudioParamFormat;
+    voice: ChatCompletionAudioParamVoice;
+  };
+
+
+      namespace  OpenAIClient {
+        export type ChatCompletionPredictionContent = {}
+       export namespace Chat {
+        export type ChatCompletionAudioParam = any;
+        export type ChatCompletionModality = /*unresolved*/ any;
+        export type ChatCompletionReasoningEffort = /*unresolved*/ any;
+      }
+    }
+
+    class OpenAIClientT {}
+
       export type ChatCompletionCreateParams =
       | ChatCompletionCreateParamsNonStreaming
       | ChatCompletionCreateParamsStreaming;
@@ -3179,7 +3242,7 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
         azureOpenAIEndpoint?: string;
         organization?: string;
         __includeRawResponse?: boolean;
-        protected client: OpenAIClient | undefined;
+        protected client: OpenAIClientT | undefined;
         protected clientConfig: OpenAIClientClientOptions | undefined;
         supportsStrictToolCalling?: boolean;
         audio?: OpenAIClient.Chat.ChatCompletionAudioParam;
@@ -3278,9 +3341,12 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
         //}
       }
       
+      //class BaseChatModelParams{}
       /**
       * Service for interacting with OpenAI chat API.
       */
+      
+
       export class AIService {
         private chatModel: ChatWrapper<ChatOpenAICallOptions>;
         private codeFormatter: CodeFormatter;
@@ -3294,13 +3360,16 @@ export declare abstract class BaseMessage extends Serializable implements BaseMe
         */
         constructor(private configuration: Configuration) {
           
-          if (!process.env.OPENAI_API_KEY) {
-            throw new Error("OPENAI_API_KEY is not set");
-          }
-          
-          this.chatModel = new ChatWrapper({ apiKey: process.env.OPENAI_API_KEY });
+         // if (!process.env.OPENAI_API_KEY) {
+         //   throw new Error("OPENAI_API_KEY is not set");
+         // }
+         
+          this.chatModel = new ChatWrapper({ apiKey: "OPENAI_API_KEY",
+            model:"foobar"
+           });
+          //Object literal may only specify known properties, and 'apiKey' does not exist in type 'BaseChatModelParams'.
           this.chatModelFAQ = new ChatWrapper({
-            apiKey: process.env.OPENAI_API_KEY,
+            apiKey: "OPENAI_API_KEY",
             model: "gpt-4o",
           });
           
